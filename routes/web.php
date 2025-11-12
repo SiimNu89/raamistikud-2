@@ -3,7 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use App\Http\Controllers\PostController;
 
+
+
+
+Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
