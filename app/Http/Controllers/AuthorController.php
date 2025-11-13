@@ -4,62 +4,67 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AuthorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Display paginated list of authors
     public function index()
     {
-        //
+        $authors = Author::paginate(10);
+
+        return Inertia::render('authors/Index', [
+            'authors' => $authors,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Show create form
     public function create()
     {
-        //
+        return Inertia::render('authors/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Store new author
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birth_date' => 'nullable|date',
+        ]);
+
+        Author::create($validated);
+
+        return redirect()->route('authors.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Author $author)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // Show edit form
     public function edit(Author $author)
     {
-        //
+        return Inertia::render('authors/Edit', [
+            'author' => $author,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Update author
     public function update(Request $request, Author $author)
     {
-        //
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birth_date' => 'nullable|date',
+        ]);
+
+        $author->update($validated);
+
+        return redirect()->route('authors.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Delete author
     public function destroy(Author $author)
     {
-        //
+        $author->delete();
+
+        return redirect()->route('authors.index');
     }
 }

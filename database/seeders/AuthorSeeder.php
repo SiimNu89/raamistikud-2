@@ -2,15 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Author;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Author;
 
 class AuthorSeeder extends Seeder
 {
-
     public function run(): void
     {
-        Author::factory()->count(1000)->create();
+        Author::factory()->count(50)->create(); // create 50 fake authors
     }
 }
