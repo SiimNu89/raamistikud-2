@@ -20,4 +20,9 @@ class Author extends Model
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }

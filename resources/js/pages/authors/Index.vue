@@ -12,6 +12,8 @@ interface Author {
     first_name: string;
     last_name: string;
     birth_date: string | null;
+    created_at: string;
+    updated_at: string;
 }
 
 interface PaginatedAuthors {
@@ -58,6 +60,8 @@ function deleteAuthor(id: number) {
                         <TableHead>First Name</TableHead>
                         <TableHead>Last Name</TableHead>
                         <TableHead>Birth Date</TableHead>
+                        <TableHead>Created At</TableHead>
+                        <TableHead>Updated At</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -67,6 +71,11 @@ function deleteAuthor(id: number) {
                         <TableCell>{{ author.first_name }}</TableCell>
                         <TableCell>{{ author.last_name }}</TableCell>
                         <TableCell>{{ author.birth_date ?? '-' }}</TableCell>
+
+                        <!-- Added fields -->
+                        <TableCell>{{ author.created_at }}</TableCell>
+                        <TableCell>{{ author.updated_at }}</TableCell>
+
                         <TableCell>
                             <DropdownMenu>
                                 <DropdownMenuTrigger as-child>

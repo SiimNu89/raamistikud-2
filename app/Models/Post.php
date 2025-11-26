@@ -12,7 +12,7 @@ class Post extends Model
     protected $fillable = [
         'title',
         'content',
-        'author',
+        'author_id',
         'published',
     ];
 
@@ -34,5 +34,12 @@ class Post extends Model
             get: fn () => $this->updated_at?->diffForHumans()
         );
     }
-
+    public function author()
+    {
+        return $this->belongsTo(Author::class);
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }   
 }
