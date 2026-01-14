@@ -10,7 +10,7 @@ hosts:
     hostname: 'ta24nurja.itmajakas.ee'
     http_user: virt137761
     remote_user: virt137761
-    deploy_path: '~/data01/virt137761/domeenid/www.ta24nurja.itmajakas.ee/raamistikud'
+    deploy_path: '~/domeenid/www.ta24nurja.itmajakas.ee/raamistikud'
 
 
 tasks:
@@ -25,10 +25,10 @@ tasks:
   deploy:
     - 'deploy:prepare'
     - 'deploy:vendors'
-    # - 'npm:production'
+    - 'npm:production'
     - 'artisan:storage:link'
-    # - 'artisan:optimize:clear'
-    # - 'artisan:optimize'
+    - 'artisan:optimize:clear'
+    - 'artisan:optimize'
     - 'deploy:publish'
 
 after:
