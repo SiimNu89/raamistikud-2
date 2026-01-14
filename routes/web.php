@@ -1,30 +1,24 @@
 <?php
 
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\AuthorController;
 
-// Posts routes
-Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
-
-// Homepage & dashboard
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function(){
+    Route::get('dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::post('/add-comment/{post}', [CommentController::class, 'store'])->name('comments.add');
 
-// Authors routes (full CRUD)
-Route::resource('authors', AuthorController::class)
-    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
-/* existing includes */
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/posts.php';
 require __DIR__.'/authors.php';

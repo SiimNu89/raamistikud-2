@@ -31,7 +31,21 @@ interface Author {
     last_name: string;
 }
 
-interface Post {
+type User = {
+    id: number;
+    name: string;
+    created_at_formatted: string | null;
+    updated_at_formatted: string | null;
+};
+
+type Comment = {
+    id: number;
+    post_id: number;
+    content: string;
+    user: User
+};
+
+export interface Post {
     id: number;
     title: string;
     content: string;
@@ -39,8 +53,9 @@ interface Post {
     published: boolean;
     created_at: string | null;
     updated_at: string | null;
-    created_at_formatted: string | null;
-    updated_at_formatted: string | null;
+    created_at_formated: string | null;
+    updated_at_formated: string | null;
+    comments?: Comment[];
 }
 
 interface PaginationLink {

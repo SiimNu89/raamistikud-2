@@ -22,8 +22,8 @@ class PostController extends Controller
                 'published' => $post->published,
                 'created_at' => $post->created_at,
                 'updated_at' => $post->updated_at,
-                'created_at_formatted' => $post->created_at?->format('Y-m-d H:i'),
-                'updated_at_formatted' => $post->updated_at?->format('Y-m-d H:i'),
+                'created_at_formated' => $post->created_at_formatted, // uses trait
+                'updated_at_formated' => $post->updated_at_formatted,
             ]);
 
         return Inertia::render('posts/Index', [
@@ -62,11 +62,32 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Post created successfully.');
     }
 
-    // Show single post
+    // Show single post with author and comments
     public function show(Post $post)
     {
+        // Load author and comments
+        $post->loadMissing(['author', 'comments']);
+
         return Inertia::render('posts/Show', [
-            'post' => $post->loadMissing('author'),
+            'post' => [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'author' => $post->author,
+                'published' => $post->published,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at,
+                'created_at_formated' => $post->created_at_formatted,
+                'updated_at_formated' => $post->updated_at_formatted,
+                'comments' => $post->comments->map(fn($comment) => [
+                    'id' => $comment->id,
+                    'content' => $comment->content,
+                    'user' => $comment->user ? [
+                        'id' => $comment->user->id,
+                        'name' => $comment->user->name,
+                    ] : null,
+                ])->toArray(),
+            ]
         ]);
     }
 
@@ -77,7 +98,13 @@ class PostController extends Controller
             ->mapWithKeys(fn($author) => [$author->id => $author->first_name . ' ' . $author->last_name]);
 
         return Inertia::render('posts/Edit', [
-            'post' => $post,
+            'post' => [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'author_id' => $post->author_id,
+                'published' => $post->published,
+            ],
             'authors' => $authors,
         ]);
     }

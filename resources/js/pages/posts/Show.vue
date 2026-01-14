@@ -1,22 +1,16 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { add } from '@/routes/comments';
 import { edit, index } from '@/routes/posts';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Post } from './Index.vue';
+import { on } from 'events';
 
 const props = defineProps<{
-    post: {
-        id: number;
-        title: string;
-        content: string;
-        author?: { first_name: string; last_name: string } | null;
-        published: boolean;
-        created_at: string;
-        updated_at: string;
-        created_at_formatted?: string;
-        updated_at_formatted?: string;
-    };
+    post: Post;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -24,9 +18,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: props.post.title, href: `/posts/${props.post.id}` },
 ];
 
-function goBack() {
-    router.visit(index().url);
-}
+const form = useForm({
+    content: '',
+});
+
+const submit = () => {
+    form.post(add(props.post.id).url);
+    preservescrll.
+    
+    onSuccess(() => {
+        form.reset();
+    });
+};
 </script>
 
 <template>
@@ -34,6 +37,7 @@ function goBack() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto max-w-3xl space-y-6 p-6">
+            <!-- Post Header -->
             <header class="space-y-2">
                 <h1 class="text-3xl font-bold">{{ props.post.title }}</h1>
                 <p class="text-sm text-gray-500">
@@ -44,13 +48,13 @@ function goBack() {
                     </span>
                     • Published on
                     {{
-                        props.post.created_at_formatted || props.post.created_at
+                        props.post.created_at_formated || props.post.created_at
                     }}
                 </p>
                 <p class="text-sm">
                     Last updated:
                     {{
-                        props.post.updated_at_formatted || props.post.updated_at
+                        props.post.updated_at_formated || props.post.updated_at
                     }}
                 </p>
                 <p class="text-sm">
@@ -67,15 +71,47 @@ function goBack() {
                 </p>
             </header>
 
+            <!-- Post Content -->
             <section class="prose prose-slate">
                 <p class="whitespace-pre-line">{{ props.post.content }}</p>
             </section>
 
+            <!-- Action Buttons -->
             <div class="mt-4 flex gap-2">
                 <Button as-child variant="outline">
                     <Link :href="edit.url(props.post.id)">Edit Post</Link>
                 </Button>
                 <Button variant="ghost" @click="goBack">Back to Posts</Button>
+            </div>
+
+            <!-- Comments List -->
+            <div class="mt-6">
+                <h2 class="mb-2 text-xl font-semibold">Comments</h2>
+
+                <ul v-if="post.comments" class="space-y-2">
+                    <li
+                        v-for="comment in post.comments"
+                        :key="comment.id"
+                        class="rounded border p-2"
+                    >
+                        <strong>{{ comment.user?.name || 'Guest' }}:</strong>
+                        {{ comment.content }}
+                    </li>
+                </ul>
+                <p v-else class="text-gray-500">No comments yet.</p>
+
+                <!-- Add Comment Form -->
+                <div class="mt-4 flex gap-2">
+                    <form @submit.prevent="submit">
+                        <Textarea
+                            v-model="form.content"
+                            type="text"
+                            placeholder="Add a comment..."
+                            class="flex-1 rounded border p-2"
+                        />
+                        <Button type="submit">Submit</Button>
+                    </form>
+                </div>
             </div>
         </div>
     </AppLayout>
