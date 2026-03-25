@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Post;
-use App\Models\Author;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PostFactory extends Factory
 {
@@ -14,9 +13,7 @@ class PostFactory extends Factory
     {
         return [
             'title' => fake()->sentence(),
-            'author_id' => Author::factory(),
-            'published' => fake()->boolean(),
-            'content' => fake()->paragraphs(3, true),
+            'description' => fake()->paragraphs(3, true),
         ];
     }
 }

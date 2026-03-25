@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Traits\HasFormattedDate;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\HasFormattedDate;
 
 class Post extends Model
 {
@@ -12,16 +12,8 @@ class Post extends Model
 
     protected $fillable = [
         'title',
-        'content',
-        'author_id',
-        'published',
+        'description',
     ];
-
-    // Relationships
-    public function author()
-    {
-        return $this->belongsTo(Author::class);
-    }
 
     public function comments()
     {

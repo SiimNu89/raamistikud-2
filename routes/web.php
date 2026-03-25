@@ -1,37 +1,36 @@
 <?php
 
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MarkerController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\WeatherController;
 use App\Mail\Timetable;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
+Route::get('/weather', [WeatherController::class, 'index'])->name('weather.index');
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', [WeatherController::class, 'index'])->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function() {
+    Route::post('/markers', [MarkerController::class, 'store'])->name('markers.store');
+    Route::put('/markers/{marker}', [MarkerController::class, 'update'])->name('markers.update');
+    Route::delete('/markers/{marker}', [MarkerController::class, 'destroy'])->name('markers.destroy');
 
-
-    Route::get('dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
-
-    
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
 
-    
     Route::post('/add-comment/{post}', [CommentController::class, 'store'])->name('comments.add');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
-
 Route::get('/mailable', function () {
-
     $startDate = now()->startOfWeek();
     $endDate   = now()->endOfWeek();
 
@@ -55,7 +54,6 @@ Route::get('/mailable', function () {
 
     return new Timetable($timetableEvents, $startDate, $endDate);
 });
-
 
 require __DIR__.'/settings.php';
 require __DIR__.'/posts.php';
