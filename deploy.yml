@@ -2,7 +2,7 @@ import:
   - recipe/laravel.php
 
 config:
-  repository: 'git@github.com:SiimNu89/raamistikud-2.git'
+  repository: 'https://github.com/SiimNu89/raamistikud-2.git'
   keep_releases: 2
 
 hosts:
