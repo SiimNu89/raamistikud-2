@@ -4,13 +4,10 @@ import:
 config:
   repository: 'https://github.com/SiimNu89/raamistikud-2.git'
   keep_releases: 2
-  # Määrame PHP versiooni, et artisan käsud ei ebaõnnestuks
-  bin/php: /usr/bin/php84
-  # Zone kasutajanimi, et Deployer teaks, kellele õigusi anda
+  # MUUDATUS SIIN: Kasutame lühemat nime või serveri vaikimisi PHP-d
+  bin/php: php84 
   http_user: virt137761
-  # Kasutame lihtsat chmod meetodit, kuna sefacl on Zone-s tihti piiratud
   writable_mode: chmod
-  # Millised kaustad peavad olema kirjutatavad
   writable_dirs:
     - storage
     - bootstrap/cache
@@ -22,25 +19,23 @@ hosts:
     deploy_path: '~/domeenid/www.ta24nurja.itmajakas.ee/raamistikud'
 
 tasks:
-  # See task tegeleb JavaScripti ja CSS-i ehitamisega serveris
   npm:production:
     - run: 'cd {{release_path}} && npm install --legacy-peer-deps'
     - run: 'cd {{release_path}} && npm run build'
 
-  # Puhastab PHP opcache, et uus kood kohe sisse loetaks
   opcache:clear:
-    - run: killall php84-cgi || true
+    # Siin muudame samuti killall käsku, et see ei sõltuks konkreetsest versioonist nii rangelt
+    - run: killall php-cgi || true
 
-  # Peamine deploy protsess
   deploy:
     - 'deploy:prepare'
     - 'deploy:vendors'
-    - 'npm:production'      # Ehitab Vite failid
+    - 'npm:production'
     - 'artisan:storage:link'
     - 'artisan:config:cache'
     - 'artisan:route:cache'
-    - 'artisan:view:cache'   # Genereerib Blade vaated ette ära
-    - 'deploy:publish'      # Teeb sümbollingi 'current' kaustale
+    - 'artisan:view:cache'
+    - 'deploy:publish'
 
 after:
   deploy:failed: deploy:unlock
