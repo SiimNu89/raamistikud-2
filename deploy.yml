@@ -4,20 +4,21 @@ import:
 config:
   repository: 'https://github.com/SiimNu89/raamistikud-2.git'
   keep_releases: 2
+  # Lisame siia php tee, et artisan käsud kindlalt õige versiooniga jookseks
+  bin/php: /usr/bin/php84 
 
 hosts:
   stage:
     hostname: 'ta24nurja.itmajakas.ee'
-    http_user: virt137761
     remote_user: virt137761
     deploy_path: '~/domeenid/www.ta24nurja.itmajakas.ee/raamistikud'
 
-
 tasks:
   npm:production:
-  - run: 'cd {{release_path}} && npm ci'
-  - run: 'cd {{release_path}} && npx vite build'
-
+    # Kasutame installi koos legacy-peer-deps-iga, et vältida konflikte
+    - run: 'cd {{release_path}} && npm install --legacy-peer-deps'
+    # KASUTA SEDA KÄSKU: See tekitab public/build kausta ja manifest.json faili
+    - run: 'cd {{release_path}} && npm run build'
 
   opcache:clear:
     - run: killall php84-cgi || true
@@ -25,10 +26,10 @@ tasks:
   deploy:
     - 'deploy:prepare'
     - 'deploy:vendors'
-    - 'npm:production'
+    - 'npm:production'      # See käivitab nüüd õige buildi
     - 'artisan:storage:link'
-    - 'artisan:optimize:clear'
-    - 'artisan:optimize'
+    - 'artisan:view:cache'  # Puhastame vaated
+    - 'artisan:config:cache'
     - 'deploy:publish'
 
 after:
